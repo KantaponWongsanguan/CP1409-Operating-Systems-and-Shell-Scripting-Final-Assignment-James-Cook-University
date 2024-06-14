@@ -1,0 +1,73 @@
+
+# Present variables [Practical 2]
+total_time=0  
+total_idle=0  
+total_run_time=0  
+total_wait_time=0  
+longest_wait=0  
+
+# Declare an array to store waiting times for each process [Practical 6]
+declare -a wait_times  
+
+# Main loop
+# read process input and calculate waiting times
+
+process_id=0  
+
+# FCFS CPU Scheduling algorithm [Lecture 3]
+
+# While loop to continuously read input [Practical 5,6]
+while true; do  
+    # Prompt user for input,
+    echo -n "Enter process details: " >&2  # output to stderr, not to stdout [Practical 5]
+    read -r input  
+    
+    # Exit the loop if input is empty [Practical 5]
+    if [[ -z "$input" ]]; then  
+        break  
+    fi
+
+    # IFS to split input into arrival and burst [Practical 5]
+    IFS=',' read -r arrival burst <<< "$input"  
+    
+    # Calculate waiting time for the current process, -ve verfication, and store it in the array		
+    wait_time=$((arrival - total_time))  
+    wait_time=$((wait_time < 0 ? 0 : wait_time))  
+    wait_times+=("$wait_time")  
+    
+    # Update total_wait_time and total_run_time 
+    total_wait_time=$((total_wait_time + wait_time))  
+    total_run_time=$((total_run_time + burst))  
+    
+    # For loop to print idle time [Practical 6]
+    for (( time=total_time; time<arrival; time++ )); do # Increment time
+        echo "T: $time, -, I" >&2  
+        total_idle=$((total_idle + 1))  # Increment total_idle 
+    done
+
+    # For loop to print running times [Practical 6]
+    for (( time=arrival; time<arrival + burst; time++ )); do  
+        echo "T: $time, $process_id, R" >&2  
+    done
+    
+    # Print statistics for the current process [Practical 5]
+    echo "S: $process_id, $burst, $wait_time" >&2  
+
+    # Update total_time to the end time of the current process [Practical 8]
+    total_time=$((arrival + burst))  
+    process_id=$((process_id + 1))  # Increment process_id 
+done
+
+# Calculate average wait time and run time
+# all elements in an array
+num_processes=${#wait_times[@]}  
+
+# 'scale=2' for two dp
+avg_wait=$(echo "scale=2; $total_wait_time / $num_processes" | bc)  
+avg_run=$(echo "scale=2; $total_run_time / $num_processes" | bc)  
+
+# Print aggregate statistics
+echo "A: $num_processes, $total_time, $total_idle, $avg_run, $avg_wait, $longest_wait" >&2  
+echo "Number of processes: $num_processes" >&2  
+echo "Total time / running time / idle time: $total_time / $total_run_time / $total_idle" >&2  
+echo "Avg run time / avg wait / longest wait: $avg_run / $avg_wait / $longest_wait" >&2  

@@ -1,0 +1,26 @@
+
+echo "Welcome to Process Manager" # Welcome message / echo command [Practical 1]
+
+# Prompt user for command input [Practical 2,6]
+read -p "Please enter one of the following commands (ps, top, kill): " command 
+
+# Display the input
+echo "You have selected $command command"
+
+# If/Elif/Else Decision structure to handle different selections [Practical 5]
+if [ "$command" == "ps" ]; then
+    # 'ps' displays info about active processes. [Practical 3]
+    echo "This command displays the processes for the current shell and the output of this command is:"
+    ps
+elif [ "$command" == "top" ]; then
+    # 'top' provides a dynamic real-time view of the running system. [Practical 3]
+    echo "This command displays dynamic real-time view of the running system and the output of this command is:"
+    top -b -n 1
+elif [ "$command" == "kill" ]; then
+    # 'kill' command allows for terminating running processes. [Practical 3]
+    echo "This command allows to terminate running processes:"
+    kill
+else
+    # handles any input that is not one of the specified commands.	
+    echo "You have not typed one of the above commands :("
+fi
